@@ -2,6 +2,7 @@
 const router = require('express').Router();
 const { check } = require('express-validator');
 const AuthController = require('../controllers/controller_auth.js');
+const { routes_validation } = require('../middleware/routes_validation.js');
 
 // --------------------------------------URLS "http://127.0.0.1:3000/api/v1/..."
 // http://127.0.0.1:3000/api/v1/signup
@@ -15,10 +16,12 @@ router.route('/signup').post(
 			return value.match(/^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{8,}$/gi);
 		}),
 	],
+	routes_validation,
 	AuthController.signup
 );
 
-// http://127.0.0.1:3000/api/v1/
+// http://127.0.0.1:3000/api/v1/signin
+router.route('/signin').get([check('email', 'Email should be valid').isEmail()], routes_validation, AuthController.signin);
 
 // http://127.0.0.1:3000/api/v1/
 

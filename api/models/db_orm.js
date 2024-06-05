@@ -57,4 +57,12 @@ const User = sequelize.define('user', {
 	},
 });
 
-module.exports = { sequelize, User };
+const JWT_BlackList = sequelize.define('jwt_blacklist', {
+	jwt_token: {
+		type: Sequelize.STRING,
+		allowNull: false,
+		unique: true,
+	},
+});
+
+module.exports = { sequelize, User, JWT_BlackList };
