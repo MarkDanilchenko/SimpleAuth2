@@ -30,6 +30,8 @@ const { sequelize } = require('./models/db_orm.js');
 })();
 
 // --------------------------------------EXIT SERVER+DB
-process.on('SIGINT', () => {
-	console.log(`\n`);
+process.on('SIGINT', async () => {
+	await sequelize.close();
+	console.log('DB connection closed. Server connection closed. Bye!');
+	process.exit(0);
 });

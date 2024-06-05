@@ -8,7 +8,6 @@ const User = sequelize.define('user', {
 		unique: false,
 		validate: {
 			is: /^[a-zA-Z]{2,}$/i,
-			msg: 'Name should be min 2 letters and must contain only letters',
 		},
 	},
 	last_name: {
@@ -17,7 +16,6 @@ const User = sequelize.define('user', {
 		unique: false,
 		validate: {
 			is: /^[a-zA-Z]{2,}$/i,
-			msg: 'LastName should be min 2 letters and must contain only letters',
 		},
 	},
 	email: {
@@ -25,9 +23,7 @@ const User = sequelize.define('user', {
 		allowNull: false,
 		unique: true,
 		validate: {
-			isEmail: {
-				msg: 'Email should be valid',
-			},
+			isEmail: {},
 		},
 	},
 	password: {
@@ -41,7 +37,6 @@ const User = sequelize.define('user', {
 		unique: false,
 		validate: {
 			is: /^(male|female)$/i,
-			msg: 'Gender should be male or female',
 		},
 	},
 	photo: {
