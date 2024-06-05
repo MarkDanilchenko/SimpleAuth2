@@ -23,6 +23,17 @@ router.route('/signup').post(
 // http://127.0.0.1:3000/api/v1/signin
 router.route('/signin').get([check('email', 'Email should be valid').isEmail()], routes_validation, AuthController.signin);
 
+// http://127.0.0.1:3000/api/v1/signout
+router.route('/signout').post(
+	[
+		check('', 'Valid refresh token is required').custom((value, { req }) => {
+			return req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer';
+		}).isJWT(),
+	],
+	routes_validation,
+	AuthController.signout
+);
+
 // http://127.0.0.1:3000/api/v1/
 
 // --------------------------------------EXPORT

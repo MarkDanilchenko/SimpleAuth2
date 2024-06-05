@@ -1,6 +1,8 @@
+// --------------------------------------DB_ORM_CONFIG
 const Sequelize = require('sequelize');
 const { sequelize } = require('./db_connection.js');
 
+// --------------------------------------MODELS
 const User = sequelize.define('user', {
 	first_name: {
 		type: Sequelize.STRING,
@@ -65,4 +67,5 @@ const JWT_BlackList = sequelize.define('jwt_blacklist', {
 	},
 });
 
+// --------------------------------------EXPORT
 module.exports = { sequelize, User, JWT_BlackList };

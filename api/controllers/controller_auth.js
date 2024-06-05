@@ -59,7 +59,7 @@ class AuthController {
 						if (!isTokenBlackListed) {
 							res.status(200);
 							res.json({
-								message: `User: ${isRegisteredUser.first_name} was successfully logged in!`,
+								message: `User: ${isRegisteredUser.first_name} was successfully signed in!`,
 								token_access: token_access,
 								token_refresh: token_refresh,
 							});
@@ -77,6 +77,26 @@ class AuthController {
 					return;
 				}
 			}
+		} catch (error) {
+			res.status(500);
+			res.json({ message: `${error}` });
+			res.end();
+		}
+	}
+	async signout(req, res) {
+		try {
+			const refresh_token = req.headers.authorization.split(' ')[1];
+			await JWT_BlackList.create({ jwt_token: refresh_token })
+				.then(() => {
+					res.status(200);
+					res.json({ message: `User was successfully signed out!` });
+					res.end();
+				})
+				.catch((error) => {
+					res.status(500);
+					res.json({ message: `${error}` });
+					res.end();
+				});
 		} catch (error) {
 			res.status(500);
 			res.json({ message: `${error}` });

@@ -1,3 +1,4 @@
+// --------------------------------------ROUTES_VALIDATION
 const { validationResult } = require('express-validator');
 
 const routes_validation = (req, res, next) => {
@@ -11,4 +12,5 @@ const routes_validation = (req, res, next) => {
 	next();
 };
 
+// --------------------------------------EXPORT
 module.exports = { routes_validation };
