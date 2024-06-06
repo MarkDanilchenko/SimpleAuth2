@@ -86,17 +86,58 @@ class AuthController {
 	async signout(req, res) {
 		try {
 			const refresh_token = req.headers.authorization.split(' ')[1];
-			await JWT_BlackList.create({ jwt_token: refresh_token })
-				.then(() => {
-					res.status(200);
-					res.json({ message: `User was successfully signed out!` });
+			JWT.verify(refresh_token, jwt_config.jwt_secretKey, (err, decoded) => {
+				if (err) {
+					res.status(401);
+					res.json({ message: `Refresh token is not valid! User is not signed in.` });
 					res.end();
-				})
-				.catch((error) => {
-					res.status(500);
-					res.json({ message: `${error}` });
-					res.end();
+					return;
+				} else {
+					JWT_BlackList.create({ jwt_token: refresh_token })
+						.then(() => {
+							res.status(200);
+							res.json({ message: `User was successfully signed out!` });
+							res.end();
+						})
+						.catch((error) => {
+							res.status(500);
+							res.json({ message: `${error}` });
+							res.end();
+						});
+				}
+			});
+		} catch (error) {
+			res.status(500);
+			res.json({ message: `${error}` });
+			res.end();
+		}
+	}
+	async refresh(req, res) {
+		try {
+			const refresh_token = req.headers.authorization.split(' ')[1];
+			const isTokenBlackListed = await JWT_BlackList.findOne({ where: { jwt_token: refresh_token } });
+			if (isTokenBlackListed) {
+				res.status(401);
+				res.json({ message: `Refresh token is not valid! User is not signed in.` });
+				res.end();
+				return;
+			} else {
+				JWT.verify(refresh_token, jwt_config.jwt_secretKey, (err, decoded) => {
+					if (err) {
+						res.status(401);
+						res.json({ message: `Refresh token is not valid! User is not signed in.` });
+						res.end();
+						return;
+					} else {
+						const token_access = JWT.sign({ user_id: decoded.user_id, email: decoded.email }, jwt_config.jwt_secretKey, {
+							expiresIn: jwt_config.jwt_expiresInAccess,
+						});
+						res.status(200);
+						res.json({ token_access: token_access });
+						res.end();
+					}
 				});
+			}
 		} catch (error) {
 			res.status(500);
 			res.json({ message: `${error}` });
