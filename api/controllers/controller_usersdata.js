@@ -13,8 +13,8 @@ class UsersDataController {
 			const totalPages = Math.ceil((await User.count()) / limit);
 			res.status(200);
 			res.json({
-				data: paginatedResult,
 				message: 'Data was successfully fetched!',
+				data: paginatedResult,
 				pageInfo: {
 					currentPage: page,
 					limit: limit,
@@ -34,8 +34,16 @@ class UsersDataController {
 
 	async getExactUser(req, res) {
 		try {
+			const id = Number(req.params.id);
+			const result = await User.findOne({ where: { id: id }, attributes: { exclude: ['password'] } });
+			if (!result) {
+				res.status(400);
+				res.json({ message: `User with id: ${id} is not found!` });
+				res.end();
+				return;
+			}
 			res.status(200);
-			res.json({ message: 'Data was successfully fetched!' });
+			res.json({ message: 'Data was successfully fetched!', data: result });
 			res.end();
 		} catch (error) {
 			res.status(500);
