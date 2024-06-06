@@ -19,7 +19,7 @@ class AuthController {
 			})
 				.then(() => {
 					res.status(200);
-					res.json({ message: `User: ${user.first_name} was successfully created!` });
+					res.json({ message: `User: ${first_name} was successfully created!` });
 					res.end();
 				})
 				.catch((error) => {

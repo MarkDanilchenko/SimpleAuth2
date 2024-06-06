@@ -1,10 +1,11 @@
 // --------------------------------------ROUTER_CONFIG
 const router = require('express').Router();
-const { check, header } = require('express-validator');
+const { check, header, query, param } = require('express-validator');
 const AuthController = require('../controllers/controller_auth.js');
+const UsersDataController = require('../controllers/controller_usersdata.js');
 const { routes_validation } = require('../middleware/routes_validation.js');
 
-// --------------------------------------URLS "http://127.0.0.1:3000/api/v1/..."
+// --------------------------------------API_URLS "http://127.0.0.1:3000/api/v1/..."
 // http://127.0.0.1:3000/api/v1/signup
 router.route('/signup').post(
 	[
@@ -28,6 +29,12 @@ router.route('/signout').post([header('Authorization', 'Bearer refresh token sho
 
 // http://127.0.0.1:3000/api/v1/refresh
 router.route('/refresh').get([header('Authorization', 'Bearer refresh token should be provided!').exists()], routes_validation, AuthController.refresh);
+
+// http://127.0.0.1:3000/api/v1/profiles?page=1         (by default perpage = 10)
+router.route('/profiles').get([query('page').isInt({ min: 1 })], routes_validation, UsersDataController.getUsers);
+
+// http://127.0.0.1:3000/api/v1/profile/:id
+router.route('/profile/:id').get([param('id').isInt({ min: 1 })], routes_validation, UsersDataController.getExactUser);
 
 // --------------------------------------EXPORT
 module.exports = { router };
