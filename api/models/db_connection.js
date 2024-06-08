@@ -8,7 +8,7 @@ const pass_db = process.env.DB_PASSWORD;
 const sequelize = new Sequelize(name_db, user_db, pass_db, {
 	dialect: 'mysql',
 	host: process.env.DB_HOST || '127.0.0.1',
-	port: process.env.DB_PORT || 3306,
+	port: 3306,
 	define: {
 		timestamps: false,
 	},

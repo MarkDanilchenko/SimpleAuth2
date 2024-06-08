@@ -9,6 +9,7 @@ staticfiles/
 mediafiles/
 *.pdf
 *.sql
+!simpleauth2_dump.sql
 db_data/
 .DS_Store
 package-lock.*

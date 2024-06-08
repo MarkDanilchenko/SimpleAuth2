@@ -2,7 +2,7 @@
 const dotenv = require('dotenv');
 dotenv.config({ path: '../.env' });
 const { server } = require('./server.js');
-const host_server = process.env.HOST_SERVER || '127.0.0.1';
+const host_server = process.env.SERVER_HOST || '127.0.0.1';
 const port_server = 3000;
 const { sequelize } = require('./models/db_orm.js');
 
