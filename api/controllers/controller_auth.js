@@ -12,7 +12,7 @@ class AuthController {
 			const email = req.body.email;
 			const password = req.body.password;
 			const password_hash = bcryptjs.hashSync(password, 10);
-			const user = await User.create({
+			await User.create({
 				first_name: first_name,
 				email: email,
 				password: password_hash,
