@@ -13,7 +13,7 @@ mediafiles/
 db_data/
 .DS_Store
 package-lock.*
-Insomnia*
+Insomnia*.json
 
 # Editor directories and files
 *.suo

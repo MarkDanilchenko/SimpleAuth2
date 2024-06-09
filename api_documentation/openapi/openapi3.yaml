@@ -1,0 +1,476 @@
+openapi: 3.0.0
+info:
+  title: SimpleAuth2
+  version: 1.0.0
+servers:
+  - url: http://0.0.0.0:3001/api/v1/
+    description: Server ExpressJS in Docker-Container
+paths:
+  /signup:
+    post:
+      summary: Sign up method.
+      tags:
+        - "Registration & authentication"
+      operationId: userSignUp
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignUpData"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+                    example: User ${first_name} was successfully created!
+                    description: Message of the response.
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /signin:
+    get:
+      summary: Sign in method.
+      tags:
+        - "Registration & authentication"
+      operationId: userSignIn
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignInData"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                  - token_access
+                  - token_refresh
+                properties:
+                  message:
+                    type: string
+                    example: User ${first_name} was successfully signed in!
+                    description: Message of the response.
+                  token_access:
+                    type: string
+                    description: Access token.
+                  token_refresh:
+                    type: string
+                    description: Refresh token.
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /signout:
+    post:
+      summary: Sign out method.
+      tags:
+        - "Registration & authentication"
+      operationId: userSignOut
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+                    example: User was successfully signed out!
+                    description: Message of the response.
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /refresh:
+    get:
+      summary: Refresh access token method.
+      tags:
+        - "Registration & authentication"
+      operationId: tokenRefresh
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - token_access
+                properties:
+                  token_access:
+                    type: string
+                    description: Access token.
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /profiles:
+    get:
+      summary: Get paginated information about profiles of the whole users method.
+      tags:
+        - "Users' Profiles"
+      operationId: getProfilesByPage
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+            example: 1
+            description: Page number
+          required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                  - data
+                properties:
+                  message:
+                    type: string
+                    example: Data was successfully fetched!
+                    description: Message of the response.
+                  data:
+                    $ref: "#/components/schemas/ProfileList"
+                  pageInfo:
+                    $ref: "#/components/schemas/PageInfo"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /profile/{id}:
+    get:
+      summary: Get information about specific user method.
+      tags:
+        - "Users' Profiles"
+      operationId: getProfileExact
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+            minimum: 1
+            example: 1
+            description: ID of the profile
+          required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                  - data
+                properties:
+                  message:
+                    type: string
+                    example: Data was successfully fetched!
+                    description: Message of the response.
+                  data:
+                    $ref: "#/components/schemas/Profile"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    put:
+      summary: Update information about specific user method.
+      tags:
+        - "Users' Profiles"
+      operationId: putProfile
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+            minimum: 1
+            example: 1
+            description: ID of the profile
+          required: true
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/UpdateUserProfileData"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+                    example: Data was successfully updated!
+                    description: Message of the response.
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "413":
+          description: Request entity too large
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "415":
+          description: Unsupported media type
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    SignInData:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          example: 0JLp6@example.com
+          description: Email
+        password:
+          type: string
+          example: 123456JDJDk
+          description: Password
+    SignUpData:
+      type: object
+      required:
+        - first_name
+        - email
+        - password
+      properties:
+        first_name:
+          type: string
+          example: John
+          description: First name
+        email:
+          type: string
+          example: 0JLp6@example.com
+          description: Email
+        password:
+          type: string
+          example: 123456JDJDk
+          description: Password
+    UpdateUserProfileData:
+      type: object
+      properties:
+        first_name:
+          type: string
+          example: John
+          description: First name
+        last_name:
+          type: string
+          example: Smith
+          description: Last name
+        email:
+          type: string
+          example: 0JLp6@example.com
+          description: Email
+        gender:
+          type: string
+          enum:
+            - male
+            - female
+          example: male
+          description: Gender
+        photo:
+          type: string
+          format: binary
+          description: User's photo
+    Profile:
+      type: object
+      required:
+        - id
+        - first_name
+        - last_name
+        - email
+        - gender
+        - photo
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          example: 1
+          description: ID of the profile
+        first_name:
+          type: string
+          example: John
+          description: First name
+        last_name:
+          type: string
+          example: Smith
+          description: Last name
+        email:
+          type: string
+          example: 0JLp6@example.com
+          description: Email
+        gender:
+          type: string
+          enum:
+            - male
+            - female
+          example: male
+          description: Gender
+        photo:
+          type: string
+          example: /assets/IMG/photo-18ff83837342f821.jpg
+          description: Photo
+        created_at:
+          type: string
+          format: 2024-01-01T00:00:00.000Z
+          example: 2024-01-01T00:00:00.000Z
+          description: Created at...
+        updated_at:
+          type: string
+          format: 2024-01-01T00:00:00.000Z
+          example: 2024-01-01T00:00:00.000Z
+          description: Updated at...
+    ProfileList:
+      type: array
+      items:
+        $ref: "#/components/schemas/Profile"
+      example:
+        - id: 1
+          first_name: John
+          last_name: Smith
+          email: 0JLp6@example.com
+          gender: male
+          photo: /assets/IMG/photo-18ff83837342f821.jpg
+          created_at: 2024-01-01T00:00:00.000Z
+          updated_at: 2024-01-01T00:00:00.000Z
+    PageInfo:
+      type: object
+      required:
+        - currentPage
+        - limit
+        - totalItems
+        - totalPages
+        - nextPage
+        - previousPage
+      properties:
+        currentPage:
+          type: number
+          example: 1
+          description: Current page
+        limit:
+          type: number
+          example: 10
+          description: Limit
+        totalItems:
+          type: number
+          example: 100
+          description: Total items
+        totalPages:
+          type: number
+          example: 10
+          description: Total pages
+        nextPage:
+          type: number
+          example: 2
+          description: Next page
+        previousPage:
+          type: number
+          example: 0
+          description: Previous page
+    Error:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: Something went wrong
+          description: Error message
