@@ -24,3 +24,8 @@ This API based on NodeJS (ExpressJS) and provides endpoints for signIn/signUp wi
   cd <your_local_path> && git clone <http/ssh-link>
   ```
 
+2. Run compose:
+
+  ```sh
+  cd SimpleAuth2 && docker compose  --env-file ./.env.public -f ./compose.yaml up --build   
+  ```
