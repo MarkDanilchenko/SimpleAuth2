@@ -1,31 +1,29 @@
 import server from "./server.js";
+import { expressOptions } from "./env.js";
+import sequelize from "./models/index.js"; // TODO should import with already models initialization
+import { logger } from "./server.js";
 
-// const { sequelize } = require("./models/db_orm.js");
+async function startServer() {
+  try {
+    await sequelize.sync({ force: false });
 
-// (async () => {
-//   try {
-//     await sequelize
-//       .sync({ force: false })
-//       .then(() => {
-//         console.log("Mysql2 connected!");
-//         server.listen(port_server, host_server, () => {
-//           if (process.env.SERVER_PORT_OUTER) {
-//             console.log(`Server started on host:port - ${host_server}:${process.env.SERVER_PORT_OUTER}`);
-//           } else {
-//             console.log(`Server started on host:port - ${host_server}:${port_server}`);
-//           }
-//         });
-//       })
-//       .catch((error) => {
-//         console.log(error);
-//       });
-//   } catch (error) {
-//     console.log(error);
-//   }
-// })();
+    logger.info("PostgreSQL connected!");
 
-// process.on("SIGINT", async () => {
-//   await sequelize.close();
-//   console.log("DB connection closed. Server connection closed. Bye!");
-//   process.exit(0);
-// });
+    server.listen(expressOptions.port, expressOptions.host, () => {
+      logger.info(`Server is running on http://${expressOptions.host}:${expressOptions.port}`);
+    });
+  } catch (error) {
+    logger.error(error.message);
+  }
+}
+
+startServer();
+
+process.on("SIGINT", async () => {
+  await sequelize.close();
+
+  logger.info("PostgreSQL connection closed!");
+  logger.info("Server stopped!");
+
+  process.exit(0);
+});

@@ -2,15 +2,12 @@ import express from "express";
 
 const router = express.Router();
 
-// const router = require("express").Router();
-// const { check, header, query, param } = require("express-validator");
 // const AuthController = require("../controllers/controller_auth.js");
 // const UsersDataController = require("../controllers/controller_usersdata.js");
 // const { routes_validation } = require("../middleware/routes_validation.js");
 // const { jwt_verification } = require("../middleware/jwt_verification.js");
 // const { multer_config } = require("../services/imgStorage_config.js");
 
-// // --------------------------------------API_URLS "http://127.0.0.1:3000/api/v1/..."
 // // http://127.0.0.1:3000/api/v1/signup
 // router.route("/signup").post(
 //   [
