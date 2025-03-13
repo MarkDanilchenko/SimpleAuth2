@@ -1,3 +1,4 @@
+import path from "path";
 import express from "express";
 import winston from "winston";
 import cookieParser from "cookie-parser";
@@ -19,7 +20,7 @@ server.use((req, res, next) => {
   res.setHeader("Content-Type", "application/json");
   next();
 });
-server.use("/uploads", express.static(`${__dirname}/assets/IMG`));
+server.use("/uploads", express.static(path.dirname(import.meta.url) + "/uploads"));
 
 server.use("/api/v1/auth", routerAuth);
 

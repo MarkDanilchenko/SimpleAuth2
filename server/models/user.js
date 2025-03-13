@@ -1,5 +1,4 @@
-import Sequelize from "sequelize";
-import sequelizeConfig from "./index.js";
+import { Sequelize, sequelizeConfig } from "./index.js";
 
 const User = sequelizeConfig.define(
   "user",
@@ -73,31 +72,4 @@ const User = sequelizeConfig.define(
   },
 );
 
-const Jwt = sequelizeConfig.define("jwt", {
-  id: {
-    type: Sequelize.UUIDV4,
-    allowNull: false,
-    unique: true,
-    primaryKey: true,
-  },
-  refresh_token: {
-    type: Sequelize.STRING,
-    allowNull: false,
-    unique: true,
-  },
-  userId: {
-    type: Sequelize.UUIDV4,
-    allowNull: false,
-    unique: true,
-    references: {
-      model: User,
-      key: "id",
-      cascade: true,
-    },
-  },
-});
-
-Jwt.belongsTo(User, { foreignKey: "userId" });
-User.hasOne(Jwt, { foreignKey: "userId" });
-
-export { User, Jwt, sequelizeConfig };
+export { User };
