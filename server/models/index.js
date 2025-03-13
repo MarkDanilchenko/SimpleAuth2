@@ -1,7 +1,7 @@
 import Sequelize from "sequelize";
 import { postgreSQLOptions } from "../env.js";
 
-const sequelize = new Sequelize(
+const sequelizeConfig = new Sequelize(
   postgreSQLOptions.databaseName,
   postgreSQLOptions.username,
   postgreSQLOptions.password,
@@ -21,4 +21,4 @@ const sequelize = new Sequelize(
   },
 );
 
-export default sequelize;
+export default sequelizeConfig;
