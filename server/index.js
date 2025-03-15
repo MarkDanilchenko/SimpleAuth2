@@ -1,11 +1,11 @@
 import server from "./server.js";
 import { expressOptions } from "./env.js";
-import sequelizeConfig from "./models/index.js";
+import { sequelizeConnection } from "./models/index.js";
 import { logger } from "./server.js";
 
 async function startServer() {
   try {
-    await sequelizeConfig.sync({ force: false });
+    await sequelizeConnection.sync({ force: true });
 
     logger.info("PostgreSQL connected!");
 
@@ -20,7 +20,7 @@ async function startServer() {
 startServer();
 
 process.on("SIGINT", async () => {
-  await sequelizeConfig.close();
+  await sequelizeConnection.close();
 
   logger.info("PostgreSQL connection closed!");
   logger.info("Server stopped!");

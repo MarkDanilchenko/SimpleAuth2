@@ -1,31 +1,19 @@
-import { sequelizeConfig, Sequelize } from "./index.js";
-import { User } from "./user.js";
+import { DataTypes } from "sequelize";
 
-const Jwt = sequelizeConfig.define("jwt", {
-  id: {
-    type: Sequelize.UUIDV4,
-    allowNull: false,
-    unique: true,
-    primaryKey: true,
-  },
-  refresh_token: {
-    type: Sequelize.STRING,
-    allowNull: false,
-    unique: true,
-  },
-  userId: {
-    type: Sequelize.UUIDV4,
-    allowNull: false,
-    unique: true,
-    references: {
-      model: User,
-      key: "id",
-      cascade: true,
+export default function JwtModel(sequelizeConfig) {
+  const Jwt = sequelizeConfig.define("jwt", {
+    id: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      unique: true,
+      primaryKey: true,
     },
-  },
-});
+    refresh_token: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+  });
 
-Jwt.belongsTo(User, { foreignKey: "userId" });
-User.hasOne(Jwt, { foreignKey: "userId" });
-
-export { Jwt };
+  return Jwt;
+}

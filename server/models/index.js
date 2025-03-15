@@ -1,7 +1,10 @@
 import Sequelize from "sequelize";
 import { postgreSQLOptions } from "../env.js";
+import JwtModel from "./jwt.js";
+import UserModel from "./user.js";
 
-const sequelizeConfig = new Sequelize(
+// pool
+const sequelizeConnection = new Sequelize(
   postgreSQLOptions.databaseName,
   postgreSQLOptions.username,
   postgreSQLOptions.password,
@@ -21,4 +24,12 @@ const sequelizeConfig = new Sequelize(
   },
 );
 
-export { sequelizeConfig, Sequelize };
+// init models
+const User = UserModel(sequelizeConnection);
+const Jwt = JwtModel(sequelizeConnection);
+
+// associations
+Jwt.belongsTo(User, { foreignKey: "userId", onDelete: "CASCADE", onUpdate: "CASCADE" });
+User.hasOne(Jwt, { foreignKey: "userId", onDelete: "CASCADE", onUpdate: "CASCADE" });
+
+export { sequelizeConnection, Jwt, User };
