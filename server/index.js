@@ -5,7 +5,7 @@ import { logger } from "./server.js";
 
 async function startServer() {
   try {
-    await sequelizeConnection.sync({ force: true });
+    await sequelizeConnection.sync({ alter: true });
 
     logger.info("PostgreSQL connected!");
 
@@ -17,7 +17,7 @@ async function startServer() {
   }
 }
 
-startServer();
+await startServer();
 
 process.on("SIGINT", async () => {
   await sequelizeConnection.close();

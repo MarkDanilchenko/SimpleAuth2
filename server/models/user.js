@@ -18,24 +18,15 @@ export default function UserModel(sequelizeConfig) {
       first_name: {
         type: DataTypes.STRING,
         allowNull: true,
-        validate: {
-          is: /^[a-zA-Z]{2,}$/i,
-        },
       },
       last_name: {
         type: DataTypes.STRING,
         allowNull: true,
-        validate: {
-          is: /^[a-zA-Z]{2,}$/i,
-        },
       },
       email: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
-        validate: {
-          is: /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/i,
-        },
       },
       password: {
         type: DataTypes.STRING,
@@ -70,7 +61,7 @@ export default function UserModel(sequelizeConfig) {
     {
       paranoid: true,
       timestamps: true,
-    },
+    }
   );
 
   return User;

@@ -3,7 +3,8 @@ import express from "express";
 import winston from "winston";
 import cookieParser from "cookie-parser";
 import { expressOptions } from "./env.js";
-import routerAuth from "./router/auth.js";
+import authRouter from "./router/auth.js";
+import userRouter from "./router/user.js";
 
 const server = express();
 
@@ -22,7 +23,8 @@ server.use((req, res, next) => {
 });
 server.use("/uploads", express.static(path.dirname(import.meta.url) + "/uploads"));
 
-server.use("/api/v1/auth", routerAuth);
+server.use("/api/v1/auth", authRouter);
+server.use("/api/v1/users", userRouter);
 
 server.get("/test", (req, res) => {
   res.status(200);

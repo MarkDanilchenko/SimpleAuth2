@@ -1,0 +1,13 @@
+function badRequestError(res, message) {
+  res.status(400);
+  res.send(message ? JSON.stringify({ message }) : { message: "Bad request!" });
+  res.end();
+}
+
+function notFoundError(res, message) {
+  res.status(404);
+  res.send(message ? JSON.stringify({ message }) : { message: "Not found!" });
+  res.end();
+}
+
+export { badRequestError, notFoundError };

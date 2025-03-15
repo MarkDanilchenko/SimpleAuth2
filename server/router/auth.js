@@ -1,12 +1,12 @@
 import express from "express";
+import { validation } from "../middlewares/validation.js";
+import { signinSchema, signupSchema } from "../utils/validationSchemas/auth.js";
 
 const router = express.Router();
 
-// const AuthController = require("../controllers/controller_auth.js");
-// const UsersDataController = require("../controllers/controller_usersdata.js");
-// const { routes_validation } = require("../middleware/routes_validation.js");
-// const { jwt_verification } = require("../middleware/jwt_verification.js");
-// const { multer_config } = require("../services/imgStorage_config.js");
+router.post("/signup", validation(signupSchema));
+router.get("/signin", validation(signinSchema));
+router.post("/signout");
 
 // // http://127.0.0.1:3000/api/v1/signup
 // router.route("/signup").post(
