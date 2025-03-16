@@ -1,14 +1,77 @@
+import { User } from "../models/index.js";
+import { Op } from "sequelize";
+import { badRequestError, notFoundError, unauthorizedError } from "../utils/errors.js";
+import crypto from "crypto";
+import jwt from "jsonwebtoken";
+import { expressOptions } from "../env.js";
+
 class AuthController {
   async signup(req, res) {
+    const { username, firstName, lastName, email, password, gender, avatar } = req.body;
+
+    const isUserExists = await User.exists({
+      where: {
+        [Op.or]: [{ email }, { username }],
+      },
+    });
+    if (isUserExists) {
+      return badRequestError(res, "User already exists!");
+    }
+
     try {
-      const { username, firstName, lastName, email, password, gender, avatar } = req.body;
-    } catch (error) {}
+      const hashedPassword = crypto.createHash("sha256").update(password).digest("hex");
+
+      await User.create({
+        username,
+        firstName,
+        lastName,
+        email,
+        password: hashedPassword,
+        gender,
+        avatar,
+      });
+
+      res.status(201);
+      res.end();
+    } catch (error) {
+      badRequestError(res, error.message);
+    }
   }
+
   async signin(req, res) {
+    const { username, email, password } = req.body;
+
+    const user = await User.findOne({
+      where: {
+        [Op.or]: [{ username }, { email }],
+      },
+    });
+    if (!user) {
+      return notFoundError(res, "User not found!");
+    }
+
+    const checkPassword = crypto.createHash("sha256").update(password).digest("hex") === user.password;
+    if (!checkPassword) {
+      return unauthorizedError(res, "Wrong password!");
+    }
+
+    const accessToken = jwt.sign({ userId: user.id }, expressOptions.jwtSecret, {
+      expiresIn: expressOptions.jwtAccessExpiresIn,
+    });
+    const refreshToken = jwt.sign({ userId: user.id }, expressOptions.jwtSecret, {
+      expiresIn: expressOptions.jwtRefreshExpiresIn,
+    });
+
+    res.status(200);
+    res.send(JSON.stringify({ accessToken, refreshToken }));
+    res.end();
+  }
+
+  async refresh(req, res) {
     try {
-      const { username, email, password } = req.body;
     } catch (error) {}
   }
+
   async signout(req, res) {
     try {
     } catch (error) {}

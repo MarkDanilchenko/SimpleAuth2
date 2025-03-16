@@ -35,9 +35,6 @@ export default function UserModel(sequelizeConfig) {
       gender: {
         type: DataTypes.STRING,
         allowNull: true,
-        validate: {
-          is: /^(male|female)$/i,
-        },
       },
       avatar: {
         type: DataTypes.STRING,

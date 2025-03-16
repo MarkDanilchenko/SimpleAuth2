@@ -1,11 +1,12 @@
 import express from "express";
 import { validation } from "../middlewares/validation.js";
 import { signinSchema, signupSchema } from "../utils/validationSchemas/auth.js";
+import authController from "../controllers/auth.js";
 
 const router = express.Router();
 
-router.post("/signup", validation(signupSchema));
-router.get("/signin", validation(signinSchema));
+router.post("/signup", validation(signupSchema), authController.signup);
+router.get("/signin", validation(signinSchema), authController.signin);
 router.post("/signout");
 
 // // http://127.0.0.1:3000/api/v1/signup

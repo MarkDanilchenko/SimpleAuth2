@@ -10,4 +10,10 @@ function notFoundError(res, message) {
   res.end();
 }
 
-export { badRequestError, notFoundError };
+function unauthorizedError(res, message) {
+  res.status(401);
+  res.send(message ? JSON.stringify({ message }) : { message: "Unauthorized!" });
+  res.end();
+}
+
+export { badRequestError, notFoundError, unauthorizedError };

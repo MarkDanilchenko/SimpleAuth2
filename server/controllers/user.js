@@ -3,6 +3,7 @@ class UserController {
     try {
     } catch (error) {}
   }
+
   async updateUser(req, res) {
     try {
     } catch (error) {}

@@ -14,7 +14,7 @@ const logger = winston.createLogger({
   transports: [new winston.transports.Console()],
 });
 
-server.use(cookieParser(expressOptions));
+server.use(cookieParser(expressOptions.cookieSecret));
 server.use(express.json());
 server.use(express.urlencoded({ extended: false }));
 server.use((req, res, next) => {
