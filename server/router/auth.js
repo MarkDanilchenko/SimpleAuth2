@@ -1,35 +1,19 @@
 import express from "express";
-import { validation } from "../middlewares/validation.js";
+import { validateRequest } from "../middlewares/requestValidation.js";
 import { signinSchema, signupSchema } from "../utils/validationSchemas/auth.js";
 import authController from "../controllers/auth.js";
+import { uploadAvatar } from "../utils/multerConfig.js";
 
 const router = express.Router();
 
-router.post("/signup", validation(signupSchema), authController.signup);
-router.get("/signin", validation(signinSchema), authController.signin);
-router.post("/signout");
-
-// // http://127.0.0.1:3000/api/v1/signup
-// router.route("/signup").post(
-//   [
-//     check("first_name", "FirstName should be min 2 characters and must contain only letters!").custom((value) => {
-//       return value.match(/^[a-zA-Z]{2,}$/gi);
-//     }),
-//     check("email", "Email should be valid!").isEmail(),
-//     check("password", "Password must be at least 8 characters and contain at least one number and one letter!").custom(
-//       (value) => {
-//         return value.match(/^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{8,}$/gi);
-//       }
-//     ),
-//   ],
-//   routes_validation,
-//   AuthController.signup
-// );
-
-// // http://127.0.0.1:3000/api/v1/signin
-// router
-//   .route("/signin")
-//   .get([check("email", "Email should be valid!").isEmail()], routes_validation, AuthController.signin);
+router.post(
+  "/signup",
+  uploadAvatar.fields([{ name: "avatar", maxCount: 1 }]),
+  validateRequest(signupSchema),
+  authController.signup
+);
+// router.get("/signin", validation(signinSchema), authController.signin);
+// router.post("/signout");
 
 // // http://127.0.0.1:3000/api/v1/signout
 // router
@@ -48,9 +32,6 @@ router.post("/signout");
 //     routes_validation,
 //     AuthController.refresh
 //   );
-
-// // http://127.0.0.1:3000/api/v1/profiles?page=1         (by default perPage = 10)
-// router.route("/profiles").get([query("page").isInt({ min: 1 })], routes_validation, UsersDataController.getUsers);
 
 // // http://127.0.0.1:3000/api/v1/profile/:id
 // router

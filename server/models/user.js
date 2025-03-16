@@ -1,6 +1,6 @@
 import { DataTypes } from "sequelize";
 
-export default function UserModel(sequelizeConfig) {
+export default function UserModelInit(sequelizeConfig) {
   const User = sequelizeConfig.define(
     "users",
     {

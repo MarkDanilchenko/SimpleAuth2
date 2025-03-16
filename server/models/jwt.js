@@ -1,6 +1,6 @@
 import { DataTypes } from "sequelize";
 
-export default function JwtModel(sequelizeConfig) {
+export default function JwtModelInit(sequelizeConfig) {
   const Jwt = sequelizeConfig.define("jwt", {
     id: {
       type: DataTypes.UUID,

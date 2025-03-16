@@ -1,15 +1,18 @@
-import { User } from "../models/index.js";
+import { Jwt, User } from "../models/index.js";
 import { Op } from "sequelize";
 import { badRequestError, notFoundError, unauthorizedError } from "../utils/errors.js";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import { expressOptions } from "../env.js";
+import fs from "fs";
+import { logger } from "../server.js";
 
 class AuthController {
   async signup(req, res) {
-    const { username, firstName, lastName, email, password, gender, avatar } = req.body;
+    const { username, firstName, lastName, email, password, gender } = req.body;
+    const avatar = req.files.avatar[0].path;
 
-    const isUserExists = await User.exists({
+    const isUserExists = await User.findOne({
       where: {
         [Op.or]: [{ email }, { username }],
       },
@@ -34,6 +37,16 @@ class AuthController {
       res.status(201);
       res.end();
     } catch (error) {
+      if (req.files) {
+        Object.values(req.files).forEach((file) => {
+          fs.unlink(file[0].path, (error) => {
+            if (error) {
+              logger.error(error.message);
+            }
+          });
+        });
+      }
+
       badRequestError(res, error.message);
     }
   }
@@ -55,16 +68,46 @@ class AuthController {
       return unauthorizedError(res, "Wrong password!");
     }
 
-    const accessToken = jwt.sign({ userId: user.id }, expressOptions.jwtSecret, {
-      expiresIn: expressOptions.jwtAccessExpiresIn,
-    });
-    const refreshToken = jwt.sign({ userId: user.id }, expressOptions.jwtSecret, {
-      expiresIn: expressOptions.jwtRefreshExpiresIn,
-    });
+    try {
+      const accessToken = jwt.sign({ userId: user.id }, expressOptions.jwtSecret, {
+        expiresIn: expressOptions.jwtAccessExpiresIn,
+      });
+      const refreshToken = jwt.sign({ userId: user.id }, expressOptions.jwtSecret, {
+        expiresIn: expressOptions.jwtRefreshExpiresIn,
+      });
 
-    res.status(200);
-    res.send(JSON.stringify({ accessToken, refreshToken }));
-    res.end();
+      const relatedRefreshToken = await Jwt.findOne({
+        where: {
+          userId: user.id,
+        },
+      });
+
+      if (relatedRefreshToken) {
+        await Jwt.update(
+          {
+            refresh_token: refreshToken,
+          },
+          {
+            where: {
+              userId: user.id,
+            },
+          }
+        );
+      }
+
+      await Jwt.create({
+        refresh_token: refreshToken,
+        userId: user.id,
+      });
+
+      res.status(200);
+      res.send(JSON.stringify({ accessToken }));
+      res.end();
+    } catch (error) {
+      logger.error(error.message);
+
+      badRequestError(res, "Something went wrong! Please, try again.");
+    }
   }
 
   async refresh(req, res) {

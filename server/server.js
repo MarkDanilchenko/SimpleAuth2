@@ -21,6 +21,7 @@ server.use((req, res, next) => {
   res.setHeader("Content-Type", "application/json");
   next();
 });
+
 server.use("/uploads", express.static(path.dirname(import.meta.url) + "/uploads"));
 
 server.use("/api/v1/auth", authRouter);
@@ -34,7 +35,7 @@ server.get("/test", (req, res) => {
 
 server.all("*", (req, res) => {
   res.status(404);
-  res.send(JSON.stringify({ message: "Not Found" }));
+  res.send(JSON.stringify({ message: "Resource is not Found" }));
   res.end();
 });
 
