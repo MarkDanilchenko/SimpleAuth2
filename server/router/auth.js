@@ -12,7 +12,7 @@ router.post(
   validateRequest(signupSchema),
   authController.signup
 );
-// router.get("/signin", validation(signinSchema), authController.signin);
+router.get("/signin", validateRequest(signinSchema), authController.signin);
 // router.post("/signout");
 
 // // http://127.0.0.1:3000/api/v1/signout

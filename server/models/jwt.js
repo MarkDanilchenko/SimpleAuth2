@@ -7,6 +7,7 @@ export default function JwtModelInit(sequelizeConfig) {
       allowNull: false,
       unique: true,
       primaryKey: true,
+      defaultValue: DataTypes.UUIDV4,
     },
     refresh_token: {
       type: DataTypes.STRING,

@@ -9,6 +9,7 @@ export default function UserModelInit(sequelizeConfig) {
         allowNull: false,
         unique: true,
         primaryKey: true,
+        defaultValue: DataTypes.UUIDV4,
       },
       username: {
         type: DataTypes.STRING,

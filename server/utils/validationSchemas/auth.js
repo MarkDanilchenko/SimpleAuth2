@@ -30,7 +30,7 @@ const signinSchema = z.object({
       password: z.string().min(8),
     })
     .refine((data) => data.username || data.email, {
-      message: "Username or email is required",
+      message: "Username or email is required!",
     }),
 });
 

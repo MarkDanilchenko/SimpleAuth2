@@ -14,7 +14,7 @@ class AuthController {
 
     const isUserExists = await User.findOne({
       where: {
-        [Op.or]: [{ email }, { username }],
+        [Op.and]: [{ email }, { username }],
       },
     });
     if (isUserExists) {
@@ -26,8 +26,8 @@ class AuthController {
 
       await User.create({
         username,
-        firstName,
-        lastName,
+        first_name: firstName,
+        last_name: lastName,
         email,
         password: hashedPassword,
         gender,
@@ -54,10 +54,9 @@ class AuthController {
   async signin(req, res) {
     const { username, email, password } = req.body;
 
+    const searchCondition = username ? { username } : { email };
     const user = await User.findOne({
-      where: {
-        [Op.or]: [{ username }, { email }],
-      },
+      where: searchCondition,
     });
     if (!user) {
       return notFoundError(res, "User not found!");
@@ -84,21 +83,19 @@ class AuthController {
 
       if (relatedRefreshToken) {
         await Jwt.update(
-          {
-            refresh_token: refreshToken,
-          },
+          { refresh_token: refreshToken },
           {
             where: {
               userId: user.id,
             },
           }
         );
+      } else {
+        await Jwt.create({
+          refresh_token: refreshToken,
+          userId: user.id,
+        });
       }
-
-      await Jwt.create({
-        refresh_token: refreshToken,
-        userId: user.id,
-      });
 
       res.status(200);
       res.send(JSON.stringify({ accessToken }));
