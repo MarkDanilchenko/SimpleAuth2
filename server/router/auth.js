@@ -17,14 +17,7 @@ router.get("/signin", validateRequest(signinSchema), authController.signin);
 
 router.post("/signout", validateJwt, authController.signout);
 
-// // http://127.0.0.1:3000/api/v1/refresh
-// router
-//   .route("/refresh")
-//   .get(
-//     [header("Authorization", "Bearer refresh token should be provided!").exists()],
-//     routes_validation,
-//     AuthController.refresh
-//   );
+router.post("/refresh", authController.refresh);
 
 // // http://127.0.0.1:3000/api/v1/profile/:id
 // router

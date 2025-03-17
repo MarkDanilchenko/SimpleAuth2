@@ -108,6 +108,7 @@ class AuthController {
   async signout(req, res) {
     try {
       const accessToken = req.headers.authorization.split(" ")[1];
+
       const { userId } = jwt.decode(accessToken);
 
       const user = await User.findByPk(userId);
@@ -130,7 +131,49 @@ class AuthController {
 
   async refresh(req, res) {
     try {
-    } catch (error) {}
+      const accessToken = req.headers.authorization && req.headers.authorization.split(" ")[1];
+      if (!accessToken) {
+        return unauthorizedError(res, "Access token not found!");
+      }
+
+      const { userId } = jwt.decode(accessToken);
+
+      const user = await User.findByPk(userId);
+      if (!user) {
+        return notFoundError(res, "User not found!");
+      }
+
+      const refreshToken = await Jwt.findOne({
+        where: {
+          userId: user.id,
+        },
+      });
+      if (!refreshToken) {
+        return unauthorizedError(res, "Refresh token not found! User is not signed in.");
+      }
+
+      jwt.verify(refreshToken.refresh_token, expressOptions.jwtSecret, async (error) => {
+        if (error) {
+          await Jwt.destroy({
+            where: {
+              userId: user.id,
+            },
+          });
+
+          return unauthorizedError(res, "Refresh token is not valid! User is not signed in.");
+        }
+
+        const accessToken = jwt.sign({ userId: user.id }, expressOptions.jwtSecret, {
+          expiresIn: expressOptions.jwtAccessExpiresIn,
+        });
+
+        res.status(200);
+        res.send(JSON.stringify({ accessToken }));
+        res.end();
+      });
+    } catch (error) {
+      badRequestError(res, error.message);
+    }
   }
 }
 
