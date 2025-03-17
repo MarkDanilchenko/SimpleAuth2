@@ -12,11 +12,14 @@ class AuthController {
     const { username, firstName, lastName, email, password, gender } = req.body;
     const avatar = req.files.avatar[0].path;
 
-    const isUserExists = await User.findOne({
-      where: {
-        [Op.and]: [{ email }, { username }],
+    const isUserExists = await User.findOne(
+      {
+        where: {
+          [Op.and]: [{ email }, { username }],
+        },
       },
-    });
+      { paranoid: false }
+    );
     if (isUserExists) {
       return badRequestError(res, "User already exists!");
     }
@@ -111,7 +114,11 @@ class AuthController {
 
       const { userId } = jwt.decode(accessToken);
 
-      const user = await User.findByPk(userId);
+      const user = await User.findOne({
+        where: {
+          id: userId,
+        },
+      });
       if (!user) {
         return notFoundError(res, "User not found!");
       }
@@ -138,7 +145,11 @@ class AuthController {
 
       const { userId } = jwt.decode(accessToken);
 
-      const user = await User.findByPk(userId);
+      const user = await User.findOne({
+        where: {
+          id: userId,
+        },
+      });
       if (!user) {
         return notFoundError(res, "User not found!");
       }
