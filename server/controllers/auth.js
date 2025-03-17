@@ -100,19 +100,35 @@ class AuthController {
       res.status(200);
       res.send(JSON.stringify({ accessToken }));
       res.end();
-    } catch (error) {
-      logger.error(error.message);
-
+    } catch {
       badRequestError(res, "Something went wrong! Please, try again.");
     }
   }
 
-  async refresh(req, res) {
+  async signout(req, res) {
     try {
-    } catch (error) {}
+      const accessToken = req.headers.authorization.split(" ")[1];
+      const { userId } = jwt.decode(accessToken);
+
+      const user = await User.findByPk(userId);
+      if (!user) {
+        return notFoundError(res, "User not found!");
+      }
+
+      await Jwt.destroy({
+        where: {
+          userId: user.id,
+        },
+      });
+
+      res.status(200);
+      res.end();
+    } catch (error) {
+      badRequestError(res, error.message);
+    }
   }
 
-  async signout(req, res) {
+  async refresh(req, res) {
     try {
     } catch (error) {}
   }

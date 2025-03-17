@@ -3,6 +3,7 @@ import { validateRequest } from "../middlewares/requestValidation.js";
 import { signinSchema, signupSchema } from "../utils/validationSchemas/auth.js";
 import authController from "../controllers/auth.js";
 import { uploadAvatar } from "../utils/multerConfig.js";
+import validateJwt from "../middlewares/jwtValidation.js";
 
 const router = express.Router();
 
@@ -13,16 +14,8 @@ router.post(
   authController.signup
 );
 router.get("/signin", validateRequest(signinSchema), authController.signin);
-// router.post("/signout");
 
-// // http://127.0.0.1:3000/api/v1/signout
-// router
-//   .route("/signout")
-//   .post(
-//     [header("Authorization", "Bearer refresh token should be provided!").exists()],
-//     routes_validation,
-//     AuthController.signout
-//   );
+router.post("/signout", validateJwt, authController.signout);
 
 // // http://127.0.0.1:3000/api/v1/refresh
 // router
