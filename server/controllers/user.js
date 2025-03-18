@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import { User, Jwt } from "../models/index.js";
-
-import { badRequestError, notFoundError } from "../utils/errors.js";
+import { badRequestError, notFoundError, unauthorizedError } from "../utils/errors.js";
+import crypto from "crypto";
 
 class UserController {
   async retrieveProfile(req, res) {
@@ -68,7 +68,29 @@ class UserController {
 
   async restoreProfile(req, res) {
     try {
-    } catch (error) {}
+      const { email, username, password } = req.body;
+
+      const searchCondition = username ? { username } : { email };
+      const user = await User.findOne({
+        where: searchCondition,
+        paranoid: false,
+      });
+      if (!user) {
+        return notFoundError(res, "User not found!");
+      }
+
+      const checkPassword = crypto.createHash("sha256").update(password).digest("hex") === user.password;
+      if (!checkPassword) {
+        return unauthorizedError(res, "Wrong password!");
+      }
+
+      await user.restore();
+
+      res.status(200);
+      res.end();
+    } catch (error) {
+      badRequestError(res, error.message);
+    }
   }
 }
 
