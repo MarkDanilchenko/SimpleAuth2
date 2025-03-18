@@ -2,6 +2,8 @@ import jwt from "jsonwebtoken";
 import { User, Jwt } from "../models/index.js";
 import { badRequestError, notFoundError, unauthorizedError } from "../utils/errors.js";
 import crypto from "crypto";
+import fs from "fs";
+import { logger } from "../server.js";
 
 class UserController {
   async retrieveProfile(req, res) {
@@ -30,7 +32,51 @@ class UserController {
 
   async updateProfile(req, res) {
     try {
-    } catch (error) {}
+      const { username, firstName, lastName, gender } = req.body;
+      const avatar = Object.keys(req.files).length ? req.files.avatar[0].path : null;
+      const accessToken = req.headers.authorization.split(" ")[1];
+
+      const { userId } = jwt.decode(accessToken);
+
+      const user = await User.findOne({
+        where: {
+          id: userId,
+        },
+      });
+      if (!user) {
+        return notFoundError(res, "User not found!");
+      }
+
+      const avatarPath = user.avatar;
+
+      await User.update(
+        {
+          username,
+          first_name: firstName,
+          last_name: lastName,
+          gender,
+          avatar,
+        },
+        {
+          where: {
+            id: user.id,
+          },
+        }
+      );
+
+      if (avatarPath) {
+        fs.unlink(avatarPath, (error) => {
+          if (error) {
+            logger.error(error.message);
+          }
+        });
+      }
+
+      res.status(200);
+      res.end();
+    } catch (error) {
+      badRequestError(res, error.message);
+    }
   }
 
   async deleteProfile(req, res) {

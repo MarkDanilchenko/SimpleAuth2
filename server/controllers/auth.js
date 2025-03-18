@@ -4,27 +4,25 @@ import { badRequestError, notFoundError, unauthorizedError } from "../utils/erro
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import { expressOptions } from "../env.js";
-import fs from "fs";
-import { logger } from "../server.js";
 
 class AuthController {
   async signup(req, res) {
-    const { username, firstName, lastName, email, password, gender } = req.body;
-    const avatar = req.files.avatar[0].path;
-
-    const isUserExists = await User.findOne(
-      {
-        where: {
-          [Op.and]: [{ email }, { username }],
-        },
-      },
-      { paranoid: false }
-    );
-    if (isUserExists) {
-      return badRequestError(res, "User already exists!");
-    }
-
     try {
+      const { username, firstName, lastName, email, password, gender } = req.body;
+      const avatar = Object.keys(req.files).length ? req.files.avatar[0].path : null;
+
+      const isUserExists = await User.findOne(
+        {
+          where: {
+            [Op.and]: [{ email }, { username }],
+          },
+        },
+        { paranoid: false }
+      );
+      if (isUserExists) {
+        return badRequestError(res, "User already exists!");
+      }
+
       const hashedPassword = crypto.createHash("sha256").update(password).digest("hex");
 
       await User.create({
@@ -40,37 +38,27 @@ class AuthController {
       res.status(201);
       res.end();
     } catch (error) {
-      if (req.files) {
-        Object.values(req.files).forEach((file) => {
-          fs.unlink(file[0].path, (error) => {
-            if (error) {
-              logger.error(error.message);
-            }
-          });
-        });
-      }
-
       badRequestError(res, error.message);
     }
   }
 
   async signin(req, res) {
-    const { username, email, password } = req.body;
-
-    const searchCondition = username ? { username } : { email };
-    const user = await User.findOne({
-      where: searchCondition,
-    });
-    if (!user) {
-      return notFoundError(res, "User not found!");
-    }
-
-    const checkPassword = crypto.createHash("sha256").update(password).digest("hex") === user.password;
-    if (!checkPassword) {
-      return unauthorizedError(res, "Wrong password!");
-    }
-
     try {
+      const { username, email, password } = req.body;
+
+      const searchCondition = username ? { username } : { email };
+      const user = await User.findOne({
+        where: searchCondition,
+      });
+      if (!user) {
+        return notFoundError(res, "User not found!");
+      }
+
+      const checkPassword = crypto.createHash("sha256").update(password).digest("hex") === user.password;
+      if (!checkPassword) {
+        return unauthorizedError(res, "Wrong password!");
+      }
+
       const accessToken = jwt.sign({ userId: user.id }, expressOptions.jwtSecret, {
         expiresIn: expressOptions.jwtAccessExpiresIn,
       });
@@ -103,8 +91,8 @@ class AuthController {
       res.status(200);
       res.send(JSON.stringify({ accessToken }));
       res.end();
-    } catch {
-      badRequestError(res, "Something went wrong! Please, try again.");
+    } catch (error) {
+      badRequestError(res, error.message);
     }
   }
 
