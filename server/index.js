@@ -1,5 +1,5 @@
 import server from "./server.js";
-import { expressOptions } from "./env.js";
+import { expressOptions, postgreSQLOptions } from "./env.js";
 import { sequelizeConnection } from "./models/index.js";
 import { logger } from "./server.js";
 
@@ -7,7 +7,7 @@ async function startServer() {
   try {
     await sequelizeConnection.sync({ alter: true });
 
-    logger.info("PostgreSQL connected!");
+    logger.info(`PostgreSQL connected on host: ${postgreSQLOptions.host}, port: ${postgreSQLOptions.port}`);
 
     server.listen(expressOptions.port, expressOptions.host, () => {
       logger.info(`Server is running on http://${expressOptions.host}:${expressOptions.port}`);
