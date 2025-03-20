@@ -12,7 +12,8 @@ services:
     env_file:
       - ./.env.public
     depends_on:
-      - db
+      db:
+        condition: service_healthy
   db:
     restart: always
     image: postgres:16.4
