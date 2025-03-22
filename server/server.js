@@ -1,24 +1,11 @@
 import path from "path";
 import express from "express";
-import winston from "winston";
 import cookieParser from "cookie-parser";
 import { expressOptions } from "./env.js";
 import authRouter from "./router/auth.js";
 import userRouter from "./router/user.js";
 
 const server = express();
-
-const logger = winston.createLogger({
-  level: "info",
-  format: winston.format.combine(
-    winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
-    winston.format.colorize({ all: true }),
-    winston.format.printf(({ timestamp, level, message }) => {
-      return `Logger: { ${timestamp} [${level}]: ${message} }`;
-    })
-  ),
-  transports: [new winston.transports.Console()],
-});
 
 server.use(cookieParser(expressOptions.cookieSecret));
 server.use(express.json());
@@ -45,5 +32,4 @@ server.all("*", (req, res) => {
   res.end();
 });
 
-export { logger };
 export default server;

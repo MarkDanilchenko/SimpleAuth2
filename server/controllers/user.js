@@ -3,7 +3,7 @@ import { User, Jwt } from "../models/index.js";
 import { badRequestError, notFoundError, unauthorizedError } from "../utils/errors.js";
 import crypto from "crypto";
 import fs from "fs";
-import { logger } from "../server.js";
+import logger from "../services/loggerConfig.js";
 
 class UserController {
   async retrieveProfile(req, res) {

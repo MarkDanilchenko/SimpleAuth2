@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { badRequestError } from "../utils/errors.js";
 import fs from "fs";
-import { logger } from "../server.js";
+import logger from "../services/loggerConfig.js";
 
 function validateRequest(schema) {
   return (req, res, next) => {

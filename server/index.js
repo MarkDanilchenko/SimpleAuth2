@@ -1,7 +1,7 @@
 import server from "./server.js";
 import { expressOptions, postgreSQLOptions } from "./env.js";
 import { sequelizeConnection } from "./models/index.js";
-import { logger } from "./server.js";
+import logger from "./services/loggerConfig.js";
 import fs from "fs";
 
 async function startServer() {

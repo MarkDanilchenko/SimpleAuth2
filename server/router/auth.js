@@ -2,7 +2,7 @@ import express from "express";
 import { validateRequest } from "../middlewares/requestValidation.js";
 import { signinSchema, signupSchema } from "../utils/validationSchemas/auth.js";
 import authController from "../controllers/auth.js";
-import { uploadAvatar } from "../utils/multerConfig.js";
+import { uploadAvatar } from "../services/multerConfig.js";
 import validateJwt from "../middlewares/jwtValidation.js";
 
 const router = express.Router();

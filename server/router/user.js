@@ -3,7 +3,7 @@ import { validateRequest } from "../middlewares/requestValidation.js";
 import userController from "../controllers/user.js";
 import validateJwt from "../middlewares/jwtValidation.js";
 import { restoreUserSchema, updateUserSchema } from "../utils/validationSchemas/user.js";
-import { uploadAvatar } from "../utils/multerConfig.js";
+import { uploadAvatar } from "../services/multerConfig.js";
 
 const router = express.Router();
 
