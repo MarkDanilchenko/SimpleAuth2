@@ -4,8 +4,10 @@ import cookieParser from "cookie-parser";
 import { expressOptions } from "./env.js";
 import authRouter from "./router/auth.js";
 import userRouter from "./router/user.js";
+import { fileURLToPath } from "url";
 
 const server = express();
+const absolutePath = path.dirname(fileURLToPath(import.meta.url));
 
 server.use(cookieParser(expressOptions.cookieSecret));
 server.use(express.json());
@@ -15,7 +17,7 @@ server.use((req, res, next) => {
   next();
 });
 
-server.use("/uploads", express.static(path.dirname(import.meta.url) + "/uploads"));
+server.use("/uploads", express.static(path.join(absolutePath, "/uploads")));
 
 server.use("/api/v1/auth", authRouter);
 server.use("/api/v1/users", userRouter);
