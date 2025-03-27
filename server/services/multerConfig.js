@@ -15,12 +15,12 @@ const avatarStorage = multer.diskStorage({
 
 const uploadAvatar = multer({
   storage: avatarStorage,
-  fileFilter: (req, file, callBack) => {
+  fileFilter: (req, file, callback) => {
     if (!["image/png", "image/jpg", "image/jpeg"].includes(file.mimetype)) {
-      return callBack(new Error("File type is not supported. Only .JPG, .PNG, .JPEG are allowed!"));
+      return callback(new Error("File type is not supported. Only .JPG, .PNG, .JPEG are allowed!"));
     }
 
-    callBack(null, true);
+    callback(null, true);
   },
   limits: {
     files: 1,
