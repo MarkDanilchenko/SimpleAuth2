@@ -19,7 +19,7 @@ const signupSchema = z.object({
     .object({
       avatar: z.any(),
     })
-    .optional(), // files are validated via server/utils/multerConfig.js
+    .optional(), // files are validated via server/services/multerConfig.js
 });
 
 const signinSchema = z.object({
